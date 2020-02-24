@@ -7,7 +7,11 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  Get,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -25,5 +29,11 @@ export class AuthController {
     @Body() authSignInDto: AuthSignInDto,
   ): Promise<{ accessToken: string }> {
     return this.authService.signIn(authSignInDto);
+  }
+
+  @Get('test')
+  @UseGuards(AuthGuard())
+  test(@Req() req) {
+    console.log(req);
   }
 }
