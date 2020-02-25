@@ -13,14 +13,16 @@ export class UserRepository extends Repository<User> {
   async signUp(authSignUpDto: AuthSignUpDto): Promise<string> {
     const { email, password } = authSignUpDto;
 
-    const user = new User();
+    const user = this.create();
     user.email = email;
     user.password = password;
 
     try {
       await user.save();
     } catch (err) {
-      if (err.code == 23505) throw new ConflictException('User already exists'); //23505 is error code if user alreay exists in postgres
+      if (err.code === 23505) {
+        throw new ConflictException('User already exists'); //23505 is error code if user alreay exists in postgres
+      }
       throw new InternalServerErrorException(err);
     }
     return 'User Created';

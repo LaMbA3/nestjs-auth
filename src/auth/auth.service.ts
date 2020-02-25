@@ -21,8 +21,10 @@ export class AuthService {
 
   async signIn(authSignInDto: AuthSignInDto): Promise<{ accessToken: string }> {
     const user: User = await this.userRepository.signIn(authSignInDto);
-    if (!user) throw new BadRequestException('Email or Password are incorect');
-
+    if (!user) {
+      throw new BadRequestException('Email or Password are incorect');
+    }
+    console.log(user);
     const { id, email } = user; //include role later
     const payload: JwtPayload = { id, email };
     const accessToken: string = await this.jwtService.sign(payload);

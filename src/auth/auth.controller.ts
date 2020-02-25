@@ -1,3 +1,4 @@
+// import { GetUser } from './get-user.decorator';
 import { AuthSignInDto } from './dto/auth-signin';
 import { AuthService } from './auth.service';
 import { AuthSignUpDto } from './dto/auth-signup';
@@ -7,11 +8,8 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
-  Get,
-  UseGuards,
-  Req,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+// import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -31,9 +29,9 @@ export class AuthController {
     return this.authService.signIn(authSignInDto);
   }
 
-  @Get('test')
-  @UseGuards(AuthGuard())
-  test(@Req() req) {
-    console.log(req);
-  }
+  // @Get('test')
+  // @UseGuards(AuthGuard())
+  // test(@GetUser() user) {
+  //   return user;
+  // }
 }
