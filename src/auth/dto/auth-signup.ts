@@ -6,5 +6,8 @@ export class AuthSignUpDto {
   email: string;
 
   @IsNotEmpty()
+  role: number;
+
+  @IsNotEmpty()
   password: string;
 }

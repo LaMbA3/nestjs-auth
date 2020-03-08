@@ -10,10 +10,10 @@ import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  MOD = 'MODERATOR',
-  WAITER = 'WAITER',
-  KITCHEN = 'KITCHEN',
+  ADMIN = 1,
+  MOD = 2,
+  // WAITER = 'WAITER',
+  // KITCHEN = 'KITCHEN',
 }
 
 @Entity()
@@ -28,11 +28,13 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  // @Column('enum', {
-  //   name: 'UserRole',
-  //   enum: UserRole,
-  // })
-  // role: UserRole;
+  @Column('enum', {
+    // name: 'UserRole',
+    enum: UserRole,
+    default: UserRole.MOD, // security fault?
+  })
+  role: UserRole;
+
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {

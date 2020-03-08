@@ -25,8 +25,8 @@ export class AuthService {
       throw new BadRequestException('Email or Password are incorect');
     }
     console.log(user);
-    const { id, email } = user; //include role later
-    const payload: JwtPayload = { id, email };
+    const { id, email, role } = user; //include role later
+    const payload: JwtPayload = { id, email, role };
     const accessToken: string = await this.jwtService.sign(payload);
 
     return { accessToken };

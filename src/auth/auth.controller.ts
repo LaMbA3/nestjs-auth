@@ -1,4 +1,6 @@
-// import { GetUser } from './get-user.decorator';
+import { UserRole } from './user.entity';
+import { RolesGuard } from './auth.roles.guard';
+import { GetUser } from './get-user.decorator';
 import { AuthSignInDto } from './dto/auth-signin';
 import { AuthService } from './auth.service';
 import { AuthSignUpDto } from './dto/auth-signup';
@@ -8,7 +10,10 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  UseGuards,
+  Get,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 // import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
@@ -29,9 +34,9 @@ export class AuthController {
     return this.authService.signIn(authSignInDto);
   }
 
-  // @Get('test')
-  // @UseGuards(AuthGuard())
-  // test(@GetUser() user) {
-  //   return user;
-  // }
+  @Get('test')
+  @UseGuards(AuthGuard(), new RolesGuard([UserRole.ADMIN])) // new RolesGuard([UserRole.ADMIN]) in [ ] specify which roles can access this route
+  test(@GetUser() user) {
+    return 'sasdsa';
+  }
 }

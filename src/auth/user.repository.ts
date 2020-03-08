@@ -11,11 +11,12 @@ import {
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
   async signUp(authSignUpDto: AuthSignUpDto): Promise<string> {
-    const { email, password } = authSignUpDto;
+    const { email, password, role } = authSignUpDto;
 
     const user = this.create();
     user.email = email;
     user.password = password;
+    user.role = role;
 
     try {
       await user.save();
