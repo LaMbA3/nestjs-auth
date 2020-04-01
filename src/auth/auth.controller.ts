@@ -30,8 +30,13 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   signIn(
     @Body() authSignInDto: AuthSignInDto,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     return this.authService.signIn(authSignInDto);
+  }
+
+  @Post('/refresh-token')
+  async refreshToken(@Body() body): Promise<any> {
+    return await this.authService.refreshToken(body.refreshToken);
   }
 
   @Get('test')

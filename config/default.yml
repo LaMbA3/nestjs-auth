@@ -6,3 +6,4 @@ db:
   database: 'restoranapi'
 jwt:
   expire: 3600
+  refreshTokenExpires: 28800

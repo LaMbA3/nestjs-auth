@@ -34,6 +34,7 @@ describe('AuthService', () => {
       console.log('here1');
       await expect(await service.signIn(mockSignupDto)).toStrictEqual({
         accessToken: token,
+        refreshToken: token,
       });
     });
 

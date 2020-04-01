@@ -21,8 +21,9 @@ export class UserRepository extends Repository<User> {
     try {
       await user.save();
     } catch (err) {
-      if (err.code === 23505) {
+      if (err.code == 23505) {
         throw new ConflictException('User already exists'); //23505 is error code if user alreay exists in postgres
+        //for some reason this is not working
       }
       throw new InternalServerErrorException(err);
     }
