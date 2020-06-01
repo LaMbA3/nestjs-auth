@@ -1,4 +1,4 @@
-import { UserRole } from './user.entity';
+import { UserRole } from '../users/user.entity';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 // import { Observable } from 'rxjs';
 // import { Reflector } from '@nestjs/core';

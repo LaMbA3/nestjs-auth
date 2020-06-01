@@ -5,7 +5,7 @@ import {
   Column,
   ManyToOne,
 } from 'typeorm';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/users/user.entity';
 
 @Entity()
 export class Category extends BaseEntity {

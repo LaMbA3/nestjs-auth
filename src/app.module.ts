@@ -6,6 +6,9 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
+import { CompaniesModule } from './companies/companies.module';
+
+require('dotenv').config();
 
 @Module({
   imports: [
@@ -13,6 +16,7 @@ import { OrdersModule } from './orders/orders.module';
     AuthModule,
     ProductsModule,
     OrdersModule,
+    CompaniesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

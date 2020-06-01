@@ -3,6 +3,7 @@ import { UserRepository } from './user.repository';
 import {
   ConflictException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 
 const mockSignupDto = {
@@ -58,7 +59,7 @@ describe('UserRepository', () => {
   });
 
   describe('signIn', () => {
-    const user = { email: 'test@test.com', password: 'test123' };
+    const user = { email: 'test@test.com', password: 'test123', role: 3 };
     beforeEach(() => {
       userRepository.findOne = jest.fn();
       userRepository.validatePassword = jest.fn();
@@ -71,6 +72,12 @@ describe('UserRepository', () => {
       expect(userRepository.findOne).toHaveBeenCalledWith({
         email: user.email,
       });
+    });
+
+    it('throws exeption if user is not allowed to sign in to service', () => {
+      userRepository.findOne.mockResolvedValue(user);
+      userRepository.validatePassword.mockResolvedValue(true);
+      return expect(userRepository.signIn(mockSignupDto,[1,2,5,4])).rejects.toThrowError(ForbiddenException);
     });
 
     it('returns null if user not found', async () => {

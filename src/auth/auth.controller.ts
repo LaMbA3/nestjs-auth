@@ -1,6 +1,6 @@
-import { UserRole } from './user.entity';
+import { UserRole } from '../users/user.entity';
 import { RolesGuard } from './auth.roles.guard';
-import { GetUser } from './get-user.decorator';
+import { GetUser } from '../users/get-user.decorator';
 import { AuthSignInDto } from './dto/auth-signin';
 import { AuthService } from './auth.service';
 import { AuthSignUpDto } from './dto/auth-signup';

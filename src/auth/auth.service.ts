@@ -1,8 +1,8 @@
-import { User } from './user.entity';
+import { User } from '../users/user.entity';
 import { JwtPayload } from './dto/jwt-payload';
 import { AuthSignInDto } from './dto/auth-signin';
 import { AuthSignUpDto } from './dto/auth-signup';
-import { UserRepository } from './user.repository';
+import { UserRepository } from '../users/user.repository';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';

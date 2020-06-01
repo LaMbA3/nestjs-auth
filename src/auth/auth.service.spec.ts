@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from './user.repository';
+import { UserRepository } from '../users/user.repository';
 import { AuthService } from './auth.service';
 import { BadRequestException } from '@nestjs/common';
 
@@ -31,7 +31,6 @@ describe('AuthService', () => {
       const token = 'sometokenval';
       mockUserRepository.signIn = jest.fn().mockResolvedValue(true);
       mockJwtService.sign = jest.fn().mockResolvedValue(token);
-      console.log('here1');
       await expect(await service.signIn(mockSignupDto)).toStrictEqual({
         accessToken: token,
         refreshToken: token,
