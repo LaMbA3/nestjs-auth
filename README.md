@@ -27,6 +27,8 @@
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+
+
 ## Running with docker
 <p>To run an application with docker u need to have docker installed to your computer.<br/> If you have docker installed run following commands at root directory of project:</p>
 
@@ -39,7 +41,8 @@ docker-compose up
 docker-compose up --build -V
 ```
 <p>For more data about docker and how to use it in this project, visit: </p>
-[Docker Article](https://blog.logrocket.com/containerized-development-nestjs-docker/)
+[Article](https://blog.logrocket.com/containerized-development-nestjs-docker/)
+
 ## Installation
 
 ```bash
