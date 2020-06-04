@@ -2,16 +2,11 @@ import { AuthSignInDto } from '../auth/dto/auth-signin';
 import { AuthSignUpDto } from '../auth/dto/auth-signup';
 import { User } from './user.entity';
 import { Repository, EntityRepository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
-import {
-  InternalServerErrorException,
-  ConflictException,
-  ForbiddenException,
-} from '@nestjs/common';
+
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async signUp(authSignUpDto: AuthSignUpDto): Promise<string> {
+  async createUser(authSignUpDto: AuthSignUpDto): Promise<User> {
     const { email, password, role } = authSignUpDto;
 
     const user = this.create();
@@ -19,39 +14,18 @@ export class UserRepository extends Repository<User> {
     user.password = password;
     user.role = role;
     
-
-    try {
-      await user.save();
-    } catch (err) {
-      if (err.code == 23505) {
-        throw new ConflictException('User already exists'); //23505 is error code if user alreay exists in postgres
-      }
-      throw new InternalServerErrorException(err);
-    }
-    return 'User Created';
+    return user.save();
   }
 
-  async signIn(authSignInDto: AuthSignInDto,allowedRoles=[]): Promise<User> {
-    const { email, password } = authSignInDto;
+  async findUser(authSignInDto: AuthSignInDto): Promise<User> {
+    const { email } = authSignInDto;
 
     const user = await this.findOne({ email });
 
-    if (user && (await this.validatePassword(password, user.password))) {
-
-      if(allowedRoles.length > 0 && !allowedRoles.includes(user.role)){
-        throw new ForbiddenException();
-      }
-      
-      return user;
+    if (!user) {
+      return null;
     }
-    return null;
-  }
-  private async validatePassword(
-    password: string,
-    hash: string,
-  ): Promise<boolean> {
-    const match = await bcrypt.compare(password, hash);
 
-    return match;
+    return user;
   }
 }

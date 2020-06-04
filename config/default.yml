@@ -1,9 +1,0 @@
-server:
-  port: 3000
-db:
-  type: 'postgres'
-  port: 5432
-  database: 'restoranapi'
-jwt:
-  expire: 3600
-  refreshTokenExpires: 28800

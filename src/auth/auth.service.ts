@@ -3,13 +3,15 @@ import { JwtPayload } from './dto/jwt-payload';
 import { AuthSignInDto } from './dto/auth-signin';
 import { AuthSignUpDto } from './dto/auth-signup';
 import { UserRepository } from '../users/user.repository';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 
-import * as config from 'config';
 
-const jwtConfig = config.get('jwt');
+import * as bcrypt from 'bcryptjs';
+
+
+export type Token = { accessToken: string; refreshToken: string };
 
 @Injectable()
 export class AuthService {
@@ -19,37 +21,42 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(authSignUpDto: AuthSignUpDto): Promise<string> {
-    return this.userRepository.signUp(authSignUpDto);
+  signUp(authSignUpDto: AuthSignUpDto): Promise<User> {
+     return this.userRepository.createUser(authSignUpDto);
   }
 
   async signIn(
-    authSignInDto: AuthSignInDto,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user: User = await this.userRepository.signIn(authSignInDto);
-    if (!user) {
-      throw new BadRequestException('Email or Password are incorect');
-    }
-
-    return await this.generateToken(user);
+    authSignInDto: AuthSignInDto
+  ): Promise<User> {
+    return await this.userRepository.findUser(authSignInDto);
   }
 
   async generateToken(
     user: User,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<Token> {
     const { id, email, role } = user;
     const payload: JwtPayload = { id, email, role };
 
     const accessToken: string = await this.jwtService.sign(payload);
     const refreshToken: string = await this.jwtService.sign(payload, {
-      expiresIn: jwtConfig.refreshTokenExpires,
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE,
     });
 
     return { accessToken, refreshToken };
   }
-  async refreshToken(token: string): Promise<any> {
-    const user: User = await this.jwtService.verify(token);
-
-    return await this.generateToken(user);
+  async verifyToken(token: string): Promise<User> {
+    return await this.jwtService.verify(token);
+  }
+  async validatePassword(
+    password: string,
+    hash: string,
+  ): Promise<boolean> {
+    try{
+      return await bcrypt.compare(password, hash);
+    }
+    catch(err){
+      console.error(err);
+      return err;
+    }
   }
 }

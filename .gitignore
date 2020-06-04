@@ -1,4 +1,5 @@
-
+#ignore environment variables
+.env
 # compiled output
 /dist
 /node_modules

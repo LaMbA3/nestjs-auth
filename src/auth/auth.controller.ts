@@ -1,8 +1,9 @@
+import { User } from './../users/user.entity';
 import { UserRole } from '../users/user.entity';
 import { RolesGuard } from './auth.roles.guard';
 import { GetUser } from '../users/get-user.decorator';
 import { AuthSignInDto } from './dto/auth-signin';
-import { AuthService } from './auth.service';
+import { AuthService, Token } from './auth.service';
 import { AuthSignUpDto } from './dto/auth-signup';
 import {
   Controller,
@@ -12,6 +13,10 @@ import {
   ValidationPipe,
   UseGuards,
   Get,
+  InternalServerErrorException,
+  ConflictException,
+  ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 // import { AuthGuard } from '@nestjs/passport';
@@ -22,21 +27,44 @@ export class AuthController {
 
   @Post('signup')
   @UsePipes(ValidationPipe)
-  signUp(@Body() authSignUpDto: AuthSignUpDto) {
-    return this.authService.signUp(authSignUpDto);
+  async signUp(@Body() authSignUpDto: AuthSignUpDto):Promise<string> {
+
+    try {
+      await this.authService.signUp(authSignUpDto);
+    }catch(err){
+      if (err.code == 23505) {
+        throw new ConflictException('User already exists'); //23505 is error code if user alreay exists in postgres
+      }
+      throw new InternalServerErrorException(err);  
+    }
+
+    return "User Created";
   }
 
   @Post('signin')
   @UsePipes(ValidationPipe)
-  signIn(
+  async signIn(
     @Body() authSignInDto: AuthSignInDto,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    return this.authService.signIn(authSignInDto);
+    allowedRoles=[]
+  ): Promise<Token> {
+
+    const user = await this.authService.signIn(authSignInDto);
+    
+    if (user && (await this.authService.validatePassword(authSignInDto.password, user.password))) {
+
+      if(allowedRoles.length > 0 && !allowedRoles.includes(user.role)){
+        throw new ForbiddenException();
+      }
+      
+      return await this.authService.generateToken(user);
+    }
+      throw new BadRequestException('Email or Password are incorrect');
   }
 
   @Post('/refresh-token')
-  async refreshToken(@Body() body): Promise<any> {
-    return await this.authService.refreshToken(body.refreshToken);
+  async refreshToken(@Body() body): Promise<Token> {
+    const user = await this.authService.verifyToken(body.refreshToken);
+    return await this.authService.generateToken(user);
   }
 
   @Get('test')

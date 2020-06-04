@@ -1,10 +1,5 @@
 import { Test } from '@nestjs/testing';
 import { UserRepository } from './user.repository';
-import {
-  ConflictException,
-  InternalServerErrorException,
-  ForbiddenException,
-} from '@nestjs/common';
 
 const mockSignupDto = {
   email: 'test@test.com',
@@ -28,7 +23,7 @@ describe('UserRepository', () => {
     userRepository = await module.get<UserRepository>(UserRepository);
   });
 
-  describe('signUp', () => {
+  describe('createUser', () => {
     let save;
 
     beforeEach(() => {
@@ -36,29 +31,17 @@ describe('UserRepository', () => {
       userRepository.create = jest.fn().mockReturnValue({ save });
     });
 
-    it('successfuly signsUp user', () => {
+    it('successfuly creates user', () => {
       save.mockResolvedValue(true);
       return expect(
-        userRepository.signUp(mockSignupDto),
+        userRepository.createUser(mockSignupDto),
       ).resolves.not.toThrow();
     });
 
-    it('Throws conflict exception if user exists', () => {
-      save.mockRejectedValue({ code: 23505 });
-      return expect(userRepository.signUp(mockSignupDto)).rejects.toThrow(
-        ConflictException,
-      );
-    });
+    
 
-    it('Throws internal server eror for unhandeled codes', () => {
-      save.mockRejectedValue({ code: 123 }); //unhandeled
-      return expect(userRepository.signUp(mockSignupDto)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-    });
-  });
-
-  describe('signIn', () => {
+  
+  describe('findUser', () => {
     const user = { email: 'test@test.com', password: 'test123', role: 3 };
     beforeEach(() => {
       userRepository.findOne = jest.fn();
@@ -67,34 +50,18 @@ describe('UserRepository', () => {
 
     it('returns user if found and valid', async () => {
       userRepository.findOne.mockResolvedValue(user);
-      userRepository.validatePassword.mockResolvedValue(true);
-      expect(await userRepository.signIn(mockSignupDto)).toMatchObject(user);
+      expect(await userRepository.findUser(mockSignupDto)).toMatchObject(user);
       expect(userRepository.findOne).toHaveBeenCalledWith({
         email: user.email,
       });
     });
 
-    it('throws exeption if user is not allowed to sign in to service', () => {
-      userRepository.findOne.mockResolvedValue(user);
-      userRepository.validatePassword.mockResolvedValue(true);
-      return expect(userRepository.signIn(mockSignupDto,[1,2,5,4])).rejects.toThrowError(ForbiddenException);
-    });
+    
 
     it('returns null if user not found', async () => {
-      userRepository.findOne.mockResolvedValue(null);
-      userRepository.validatePassword.mockResolvedValue(true);
-      expect(await userRepository.signIn(mockSignupDto)).toBe(null);
-      expect(userRepository.validatePassword).not.toHaveBeenCalled();
+      userRepository.findOne.mockResolvedValue(undefined);
+      expect(await userRepository.findUser(mockSignupDto)).toBe(null);
     });
-
-    it('returns null if wrong password', async () => {
-      userRepository.findOne.mockResolvedValue(user);
-      userRepository.validatePassword.mockResolvedValue(false);
-      expect(await userRepository.signIn(mockSignupDto)).toBe(null);
-      expect(userRepository.validatePassword).toHaveBeenCalledWith(
-        mockSignupDto.password,
-        user.password,
-      );
     });
   });
 });
