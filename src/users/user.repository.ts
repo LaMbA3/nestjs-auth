@@ -1,5 +1,5 @@
-import { AuthSignInDto } from '../auth/dto/auth-signin';
-import { AuthSignUpDto } from '../auth/dto/auth-signup';
+import { AuthSignInDto } from '../routes/auth/dto/auth-signin';
+import { AuthSignUpDto } from '../routes/auth/dto/auth-signup';
 import { User } from './user.entity';
 import { Repository, EntityRepository } from 'typeorm';
 
@@ -19,8 +19,12 @@ export class UserRepository extends Repository<User> {
 
   async findUser(authSignInDto: AuthSignInDto): Promise<User> {
     const { email } = authSignInDto;
-
-    const user = await this.findOne({ email });
+    
+    // const options:FindOneOptions
+    const user = await this.createQueryBuilder("user")
+                      .addSelect("user.password")
+                      .where("user.email = :email", { email})
+                      .getOne();
 
     if (!user) {
       return null;

@@ -1,5 +1,5 @@
-import { Restourant } from './../restourants/restourant.entity';
-import { UserRestourant } from '../entities/UserRestourant.entity';
+import { Workout } from 'src/routes/workouts/workout.entity';
+// import { Exercise } from '../exercises/exercise.entity';
 import {
   BaseEntity,
   Entity,
@@ -8,16 +8,17 @@ import {
   BeforeInsert,
   Unique,
   OneToMany,
+  // OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Exercise } from 'src/routes/exercises/exercise.entity';
+// import { Exercise } from 'src/routes/exercises/exercise.entity';
 
 export enum UserRole {
   ADMIN = 1,
-  OWNER = 2,
-  MOD = 3,
-  WAITER = 4,
-  KITCHEN = 5,
+  MOD = 2,
+  USER = 3,
 }
 
 @Entity()
@@ -29,19 +30,21 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({select:false})
   password: string;
 
   @Column('enum', {
     // name: 'UserRole',
     enum: UserRole,
-    default: UserRole.MOD, // security fault?
+    default: UserRole.USER,
   })
   role: UserRole;
 
+  @OneToMany(()=> Exercise, exercise=> exercise.creator)
+  exercises: Exercise[];
 
-  @OneToMany(()=>UserRestourant, UR=>UR.user)
-  restourants: Restourant[];
+  @OneToMany(()=> Workout, workout=> workout.creator)
+  workouts: Workout[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
