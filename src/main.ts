@@ -10,7 +10,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
   const options = new DocumentBuilder()
-    .setTitle('Restourant Api Endpoints')
+    .setTitle('Auth App')
     .setDescription('')
     .setVersion('1.0')
     .addTag('Api')
